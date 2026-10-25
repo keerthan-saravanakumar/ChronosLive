@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { authApi } from '../api/auth';
@@ -8,6 +8,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => sessionStorage.getItem(TOKEN_KEY));
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(Boolean(token));
+  const signingOut = useRef(false);
   const navigate = useNavigate(), location = useLocation();
   function clear() { sessionStorage.removeItem(TOKEN_KEY); setToken(null); setUser(null); setLoading(false); }
   useEffect(() => {
@@ -19,7 +20,7 @@ export function AuthProvider({ children }) {
   }, [token]);
   useEffect(() => {
     const ended = () => {
-      if (!sessionStorage.getItem(TOKEN_KEY)) return;
+      if (signingOut.current || !sessionStorage.getItem(TOKEN_KEY)) return;
       clear();
       toast.error('Your session has ended. Please sign in again.');
       if (location.pathname !== '/login') navigate('/login', { replace: true, state: { from: location.pathname + location.search } });
@@ -41,9 +42,10 @@ export function AuthProvider({ children }) {
     return result.data.user;
   }
   async function signOut() {
+    signingOut.current = true;
     try { await authApi.logout(); toast.success('Signed out of all sessions.'); }
     catch { toast('Signed out here. Other sessions expire automatically if the server could not be reached.'); }
-    finally { clear(); navigate('/login'); }
+    finally { clear(); signingOut.current = false; navigate('/login'); }
   }
   return <AuthContext.Provider value={{ user, token, loading, signIn, signOut, setUser }}>{children}</AuthContext.Provider>;
 }

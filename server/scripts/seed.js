@@ -52,7 +52,6 @@ async function seed(password) {
 if (require.main === module) (async () => {
   const env = readEnv();
   await connectDB(env.MONGODB_URI);
-  for (const model of Object.values(mongoose.models)) await model.createIndexes();
   console.log(JSON.stringify(await seed(process.env.DEMO_PASSWORD), null, 2));
   console.log('Demo passwords come from DEMO_PASSWORD and are never printed.');
   await mongoose.disconnect();

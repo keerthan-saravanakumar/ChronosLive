@@ -2,6 +2,7 @@ const { Slot, Booking, WaitlistEntry, Service } = require('../models');
 const { transaction } = require('./transaction');
 const { guardService, guardActor, guardSchedule, requireOwner, sameId } = require('./guards');
 const { overlap, validateInterval, generateSlots } = require('../utils/time');
+const { slotChanged } = require('./notificationService');
 const AppError = require('../utils/AppError');
 async function createSlots(serviceId, intervals, context) {
   if (intervals.length > 200) throw new AppError(400, 'TOO_MANY_SLOTS', 'A request may create at most 200 slots.');
@@ -21,7 +22,9 @@ async function createSlots(serviceId, intervals, context) {
       for (let other = 0; other < index; other++) if (overlap(slot, intervals[other])) conflicts.push({ index, otherIndex: other, startTime: intervals[other].startTime, endTime: intervals[other].endTime });
     });
     if (conflicts.length) throw new AppError(409, 'SLOT_OVERLAP', 'No slots were created. Resolve the conflicting intervals.', { conflicts });
-    return Slot.insertMany(intervals.map(slot => ({ ...slot, service: service._id, organizer: actor._id })), { session });
+    const created = await Slot.insertMany(intervals.map(slot => ({ ...slot, service: service._id, organizer: actor._id })), { session });
+    for (const slot of created) await slotChanged(slot._id, session);
+    return created;
   });
 }
 async function position(entry, session) {

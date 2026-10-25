@@ -15,7 +15,7 @@ const slotFields = { startTime: instant, endTime: instant, capacity: z.number().
 const filters = z.object({
   ...pagination, from: instant.optional(), to: instant.optional(),
   availableOnly: booleanQuery.optional().default(false), timeFrom: clock.optional(), timeTo: clock.optional(),
-}).strict().refine(v => !v.from || !v.to || v.from < v.to, { message: 'from must be before to' })
+}).strict().refine(v => !v.from || !v.to || Date.parse(v.from) < Date.parse(v.to), { message: 'from must be before to' })
   .refine(v => !v.timeFrom || !v.timeTo || v.timeFrom < v.timeTo, { message: 'timeFrom must be before timeTo' });
 module.exports = {
   id: route(empty, idParams),
