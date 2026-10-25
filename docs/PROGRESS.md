@@ -6,8 +6,8 @@ Authorization: proceed through all phases without approval pauses; preserve exis
 |---|---|---|
 | 0 Setup | Verified | Both dev servers HTTP 200; Vite production build passes |
 | 1 Backend/auth | Verified | 4 auth/environment integration tests pass against a replica set; npm audit: 0 vulnerabilities |
-| 2 Services/slots | In progress | Models, shared guards, slot generation and ownership |
-| 3 Booking/waitlist | Pending | |
+| 2 Services/slots | Verified | 9 tests pass; strict bulk rollback, cross-service organizer races, IST boundaries and ownership verified. Full seed follows the engine in Phase 3. |
+| 3 Booking/waitlist | In progress | Transactional reservations, promotion and durable outbox |
 | 4 Realtime | Pending | |
 | 5 Core frontend | Pending | |
 | 6 Organizer/notifications | Pending | |
@@ -27,3 +27,5 @@ Original user documents are `MASTER_PROMPT.md` and `GUIDELINES.md` (names differ
 - GitHub account is connected, but no ChronosLive repository exists among accessible repositories. No deployment has been verified.
 - `79e7340` — verified workspace scaffold.
 - Phase 1: registration/login/me/logout, active-account/token-version checks, strict validation, CORS/Helmet/rate limits, database startup checks and CI. Auth tests: 4/4 passed. Zod upgraded to 4.6.7 after an advisory; install audit reports zero vulnerabilities. Manual check: register/login, fetch /api/auth/me, logout and confirm the old token receives 401.
+- `e3c81eb`, `9f60727` — authentication foundation and tests/CI.
+- Phase 2: 9/9 tests passed (auth + slots). Service CRUD/archive, slot generation, listing, personal state, roster, shared write guards and all schemas/indexes implemented. Seed completion deliberately moves to Phase 3 so it uses the verified booking engine rather than bypassing invariants. Manual check: create a service and adjacent slots; overlapping bulk request must return 409 with no extra slots.
