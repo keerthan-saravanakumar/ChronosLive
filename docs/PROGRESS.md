@@ -5,8 +5,8 @@ Authorization: proceed through all phases without approval pauses; preserve exis
 | Phase | Status | Verification / remaining work |
 |---|---|---|
 | 0 Setup | Verified | Both dev servers HTTP 200; Vite production build passes |
-| 1 Backend/auth | In progress | Foundation/auth code and integration tests being connected |
-| 2 Services/slots | Pending | |
+| 1 Backend/auth | Verified | 4 auth/environment integration tests pass against a replica set; npm audit: 0 vulnerabilities |
+| 2 Services/slots | In progress | Models, shared guards, slot generation and ownership |
 | 3 Booking/waitlist | Pending | |
 | 4 Realtime | Pending | |
 | 5 Core frontend | Pending | |
@@ -25,3 +25,5 @@ Original user documents are `MASTER_PROMPT.md` and `GUIDELINES.md` (names differ
 - `934b2ac` — repository boundaries and approved design; .gitignore is in the first commit.
 - Phase 0: installed 504 packages; API and Vite returned HTTP 200; production Vite build passed. Required elevated execution for Windows child processes and Git metadata. npm audit reported one high finding; investigation underway.
 - GitHub account is connected, but no ChronosLive repository exists among accessible repositories. No deployment has been verified.
+- `79e7340` — verified workspace scaffold.
+- Phase 1: registration/login/me/logout, active-account/token-version checks, strict validation, CORS/Helmet/rate limits, database startup checks and CI. Auth tests: 4/4 passed. Zod upgraded to 4.6.7 after an advisory; install audit reports zero vulnerabilities. Manual check: register/login, fetch /api/auth/me, logout and confirm the old token receives 401.
