@@ -9,7 +9,7 @@ let replSet;
 const env = readEnv({ NODE_ENV: 'test', MONGODB_URI: 'mongodb://localhost/chronoslive-test', JWT_SECRET: crypto.randomBytes(32).toString('hex'), JWT_EXPIRES_IN: '15m', CLIENT_URL: 'http://localhost:5173' });
 async function setupDB() {
   replSet = await MongoMemoryReplSet.create({ binary: { version: '7.0.24', downloadDir: path.resolve(__dirname, '../../.cache/mongodb') }, replSet: { count: 1, storageEngine: 'wiredTiger' } });
-  await mongoose.connect(replSet.getUri());
+  await mongoose.connect(replSet.getUri(), { monitorCommands: true });
   for (const model of Object.values(mongoose.models)) await model.syncIndexes();
 }
 async function clearDB() { for (const collection of Object.values(mongoose.connection.collections)) await collection.deleteMany({}); }
