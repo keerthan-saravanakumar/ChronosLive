@@ -4,7 +4,7 @@
 
 [Source repository](https://github.com/keerthan-saravanakumar/ChronosLive) · [Verified progress](docs/PROGRESS.md) · [Demo script](docs/DEMO_SCRIPT.md)
 
-Live application: **deployment pending provider access**. Demo video: **not recorded yet**. These are outstanding submission requirements, not verified links.
+Live application: **deployment pending Atlas configuration**. Demo video: **not recorded yet**. These are outstanding submission requirements, not verified links.
 
 ## Problem Statement
 
@@ -161,7 +161,7 @@ npm run configure:hosting -- https://YOUR-API.onrender.com
 
 Set the two matching `VITE_` variables in Vercel and `CLIENT_URL` in Render. Vercel builds intentionally reject missing/insecure API settings or a CSP that does not match the backend. The committed `.invalid` origin is an explicit configuration placeholder, not a deployed service.
 
-Current external status: GitHub repository created; Render requests GitHub authorization; Atlas requires sign-in; Vercel is signed in. **No working live application is claimed yet.** Render's free tier can sleep; its first request may take roughly 30–60 seconds. The client reconciles after reconnect and server queries remain safe while cron is delayed.
+Current external status: source is published and [GitHub Actions](https://github.com/keerthan-saravanakumar/ChronosLive/actions/runs/40211895050) passed 48 tests, build and credential scan. Render account setup and its free-service form are ready. The dedicated Atlas project exists; cluster creation is blocked by reCAPTCHA connectivity. Vercel access is verified. **No working live application is claimed yet.** Render's free tier can sleep; its first request may take roughly 30–60 seconds. The client reconciles after reconnect and server queries remain safe while cron is delayed.
 
 ## Demo Accounts
 

@@ -8,9 +8,10 @@ Local verification date: 25 October 2026. Node v24.13.0, Jest/Supertest and Mong
 |---|---|
 | Complete backend regression suite | 45/45 passed across 7 suites after jobs/index/slot-event changes |
 | Additional production-security suite | 3/3 passed: CORS/Helmet, auth throttle, safe validation/body-size errors |
+| GitHub Actions on published implementation `26f045a` | [Run 40211895050](https://github.com/keerthan-saravanakumar/ChronosLive/actions/runs/40211895050) passed: 48 tests across 8 suites, frontend build and credential scan |
 | Production Vite build | Passed after organizer layout and authentication UI fixes |
 | Dependency audit | 0 vulnerabilities across installed dependencies |
-| Credential-pattern scan | Passed for 134 historical text blobs and non-ignored working files at that checkpoint; repeated before publication |
+| Credential-pattern scan | Passed for 162 historical text blobs and non-ignored working files in the published CI run |
 | Vercel configuration rejection check | An insecure localhost production API configuration was rejected as expected |
 | Local persistent restart | API connected; existing seed preserved; 0 duplicate services created |
 | Production-mode startup smoke | Real local replica set, separate smoke database: health connected and required partial unique indexes present before accepting requests; process then closed |
@@ -52,7 +53,7 @@ Screenshots are in [screenshots](screenshots/), including the live promotion, ro
 
 ## External verification still required
 
-- [ ] GitHub Actions succeeds for the final pushed commit.
+- [x] Published implementation `26f045a` passes GitHub Actions. Verify the latest deployment commit again before submission.
 - [ ] Atlas is configured and deployed API health reports connected.
 - [ ] Vercel frontend connects to that API with correct CSP/CORS and secure WebSockets.
 - [ ] All five workflows pass on deployed URLs using two browsers.

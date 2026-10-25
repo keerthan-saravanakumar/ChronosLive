@@ -16,12 +16,15 @@
 - [x] Production index readiness, deployment configuration and separate frontend security headers.
 - [x] README, architecture, API, decisions, deployment runbook, demo script and submission block.
 - [x] GitHub repository created for the project.
+- [x] Implementation source/history published; GitHub Actions passed 48 tests, build and credential scan on `26f045a`.
 - [x] Final mobile organizer roster and recurring-form evidence captured without horizontal page overflow.
 
 ## Still requires external completion
 
-- [ ] Publish the final source/history and verify GitHub Actions on that commit.
-- [ ] Complete Render authorization and Atlas login/database/network configuration.
+- [ ] Verify CI again after final deployment configuration changes.
+- [x] Complete Render account setup and prepare its free Node service form using the public repository.
+- [x] Complete Atlas login and create the dedicated project.
+- [ ] Resolve Atlas reCAPTCHA connectivity and complete cluster/database/network configuration.
 - [ ] Deploy API/frontend with real URLs and matching CSP/CORS.
 - [ ] Run all five workflows on the live URLs in two browsers.
 - [ ] Verify a valid Cloudinary avatar and service cover upload.

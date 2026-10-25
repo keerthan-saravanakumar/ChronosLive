@@ -40,8 +40,8 @@ Major Features:
 ## Before submitting
 
 - [ ] Enter the student's correct name.
-- [ ] Confirm the repository contains the final committed source and meaningful history.
-- [ ] Confirm GitHub Actions is green for the submitted commit.
+- [x] Implementation source and meaningful history are published through `26f045a`; its GitHub Actions run passed 48 tests, build and credential scan.
+- [ ] Confirm GitHub Actions is green for the final deployment/submission commit.
 - [ ] Finish Atlas/Render/Vercel setup and run all live smoke tests in [DEPLOYMENT.md](DEPLOYMENT.md).
 - [ ] Verify real Cloudinary uploads or state their remaining configuration limitation honestly.
 - [ ] Replace the live application and video placeholders.

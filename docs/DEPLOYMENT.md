@@ -2,10 +2,10 @@
 
 ## Current state
 
-- GitHub repository: https://github.com/keerthan-saravanakumar/ChronosLive (created under the connected account).
-- Render: new GitHub authorization is requested; no backend deployment is verified.
-- Atlas: account login is required; no production replica-set URI is configured.
-- Vercel: an existing Hobby account is signed in; no working ChronosLive deployment is verified.
+- GitHub repository: https://github.com/keerthan-saravanakumar/ChronosLive. Implementation commit `26f045a` is published; [CI run 40211895050](https://github.com/keerthan-saravanakumar/ChronosLive/actions/runs/40211895050) passed all 48 tests, frontend build and credential scan.
+- Render: account setup succeeded. The public-repository web-service form is prepared for `chronoslive-api`, free compute, Singapore, the commands below and `/api/health`. Required production environment values remain incomplete; no service has been deployed.
+- Atlas: signed in and the dedicated ChronosLive project exists. The saved cluster draft uses Free/M0, AWS Singapore, name `ChronosLive`, with automatic security setup and sample data disabled. Creation is blocked by the provider's reCAPTCHA connectivity error; no cluster or production URI is verified.
+- Vercel: existing Hobby account access was verified; deployment awaits a working backend and matching configuration.
 - Cloudinary: the three server credentials are absent; successful image upload is unverified.
 - Gemini: deferred. Its key is not required for the core app.
 
@@ -25,17 +25,20 @@ The GitHub Actions workflow must pass for the submitted commit. It uses Node 24,
 
 ## 2. Atlas
 
-Create/select a project dedicated to ChronosLive and an appropriate free replica-set cluster. Create a database user limited to the application database. Configure network access for the Render service's documented outbound addresses; add a development address only if needed for seeding. Obtain the driver connection URI with the database name `chronoslive` and URL-encoded credentials.
+Resume the saved Free/M0 AWS Singapore draft in the dedicated ChronosLive project. The current blocker is `Could not connect to the reCAPTCHA service`; a retry also failed, and the cluster list was verified empty. Resolve the provider challenge connectivity before submitting again. Keep the free tier selected: a fresh form defaults to paid M10.
+
+Once the cluster exists, create `chronoslive_app` with `readWrite` on the `chronoslive` database. Configure network access for the Render service's documented outbound addresses; add a temporary development address only if needed for seeding. Obtain the driver connection URI with the database name `chronoslive` and URL-encoded credentials.
 
 Credentials and account security actions must be completed in the provider UI. Paste the URI into Render's `MONGODB_URI` setting or an ignored local server environment file. Never paste it into an issue, README or screenshot. The API verifies that the database supports transactions; a standalone MongoDB instance is rejected.
 
 ## 3. Render backend
 
-Connect the GitHub account and allow access to the ChronosLive repository. Use the repository's `render.yaml` Blueprint or create a **Node web service** with:
+The prepared form uses **Public Git Repository** with `https://github.com/keerthan-saravanakumar/ChronosLive`. This path is available without connecting a Git provider. Use the repository's `render.yaml` Blueprint where supported, or finish the **Node web service** form with:
 
 | Setting | Value |
 |---|---|
 | Repository/branch | ChronosLive / main |
+| Service name/region | `chronoslive-api` / Singapore |
 | Root directory | Repository root (leave blank) |
 | Runtime | Node 24 LTS |
 | Build | `npm ci --omit=dev --workspace server` |
@@ -44,6 +47,8 @@ Connect the GitHub account and allow access to the ChronosLive repository. Use t
 | Instance count | One; choose the available free plan if appropriate |
 
 Required environment values: `NODE_ENV=production`, generated `JWT_SECRET`, `JWT_EXPIRES_IN=15m`, `MONGODB_URI`, and the exact HTTPS Vercel origin as `CLIENT_URL` (no trailing slash). Render provides the port. Configure all three Cloudinary values together when available. Do not set any secret using a `VITE_` prefix.
+
+The open form already contains `NODE_ENV=production`, `NODE_VERSION=24.13.0` and `JWT_EXPIRES_IN=15m`; the three remaining required values are blank. Generate a dedicated production JWT secret. Public-repository deployments may require manual deploys unless configured through a Blueprint; verify the chosen update mechanism in Render.
 
 Startup awaits additive index creation before listening. It does not drop production indexes. If startup reports duplicate/index conflicts, inspect the data and resolve them deliberately; do not delete records or reset production as a deployment shortcut. The seed is also additive and uses the booking engine.
 
