@@ -9,8 +9,8 @@ Authorization: proceed through all phases without approval pauses; preserve exis
 | 2 Services/slots | Verified | 9 tests pass; strict bulk rollback, cross-service organizer races, IST boundaries and ownership verified. Full seed follows the engine in Phase 3. |
 | 3 Booking/waitlist | Verified | 29 tests pass, including deterministic held-user-guard race and outbox crash boundaries. Persistent local API and invariant-safe seed run successfully. |
 | 4 Realtime | Verified | 33 tests pass; authenticated rooms, private delivery, logout and expiry. Local restart preserved seed data. |
-| 5 Core frontend | In progress | Responsive attendee UI, live reconciliation and booking actions |
-| 6 Organizer/notifications | Pending | |
+| 5 Core frontend | Verified | Production build passes; browser registration/book/cancel/waitlist flows verified; no console errors; mobile 390px has no horizontal overflow. |
+| 6 Organizer/notifications | In progress | Organizer dashboard/roster, uploads, notifications/profile and admin |
 | 7 Jobs/hardening | Pending | |
 | 8 Gemini stretch | Deferred | Core and deployment take priority |
 | 9 Deployment | Pending | No provider credentials found in environment; check connected accounts |
@@ -33,3 +33,5 @@ Original user documents are `MASTER_PROMPT.md` and `GUIDELINES.md` (names differ
 - Phase 3: 29/29 integration tests passed. 20 parallel users produce exactly 5 confirmed reservations; duplicate requests, cross-service user conflicts, FIFO skip/promotion, capacity changes, slot cascades, archival semantics and outbox restart/duplicate processing verified. A MongoDB command barrier forces the cross-document conflict test. Local API health reports connected; three demo services seeded. Run npm run local and npm run dev:client; local demo credentials are private in .local/demo-password. Socket dispatch is next.
 - `73bb159`, `138403b` — booking/outbox/local seed implementation and race/recovery tests.
 - Phase 4: 33/33 tests pass (full suite ~111 seconds). Socket.io JWT/DB checks, validated rooms, private recipient filtering, expiry/logout disconnect and durable outbox dispatch integrated. Reconnecting clients can recover from REST. Persistent local restart added zero duplicate demo services. Manual check: authenticate two browsers, join a service room, book a seat and verify only the booking user receives its notification.
+- `3799c40`, `bef3057` — authenticated sockets and tests.
+- Phase 5: production build passed (route-level chunks). Chrome verified a disposable local attendee registration, Live indicator, actual booking, waitlist position #3, confirmed cancellation, My Bookings and confirmed waitlist departure. Browser console errors: none. Mobile viewport 390×844: document width equals scroll width (390). Evidence saved in docs/screenshots. Core UI uses API data throughout.
