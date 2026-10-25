@@ -1,0 +1,11 @@
+const router = require('express').Router();
+const controller = require('../controllers/authController');
+const schemas = require('../validators/auth');
+const validate = require('../middlewares/validate');
+const { auth } = require('../middlewares/auth');
+const wrap = require('../utils/asyncHandler');
+router.post('/register', validate(schemas.register), wrap(controller.register));
+router.post('/login', validate(schemas.login), wrap(controller.login));
+router.get('/me', auth, validate(schemas.empty), wrap(controller.me));
+router.post('/logout', auth, validate(schemas.empty), wrap(controller.logout));
+module.exports = router;
