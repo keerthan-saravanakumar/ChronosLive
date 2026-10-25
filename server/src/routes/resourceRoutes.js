@@ -1,0 +1,17 @@
+const router = require('express').Router();
+const { auth, authorize, optionalAuth } = require('../middlewares/auth');
+const validate = require('../middlewares/validate');
+const schemas = require('../validators/resources');
+const c = require('../controllers/resourceController');
+const wrap = require('../utils/asyncHandler');
+router.get('/services', optionalAuth, validate(schemas.serviceList), wrap(c.listServices));
+router.post('/services', auth, authorize('organizer'), validate(schemas.createService), wrap(c.createService));
+router.get('/services/:id', optionalAuth, validate(schemas.id), wrap(c.getService));
+router.patch('/services/:id', auth, authorize('organizer'), validate(schemas.updateService), wrap(c.updateService));
+router.delete('/services/:id', auth, authorize('organizer'), validate(schemas.id), wrap(c.archiveService));
+router.get('/services/:id/slots', optionalAuth, validate(schemas.slotList), wrap(c.listSlots));
+router.post('/services/:id/slots', auth, authorize('organizer'), validate(schemas.createSlot), wrap(c.createSlot));
+router.post('/services/:id/slots/bulk', auth, authorize('organizer'), validate(schemas.createBulk), wrap(c.createBulk));
+router.get('/slots/:id', optionalAuth, validate(schemas.id), wrap(c.getSlot));
+router.get('/slots/:id/roster', auth, authorize('organizer'), validate(schemas.id), wrap(c.roster));
+module.exports = router;

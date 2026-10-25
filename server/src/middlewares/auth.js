@@ -10,4 +10,5 @@ const auth = asyncHandler(async (req, _res, next) => {
   next();
 });
 const authorize = (...roles) => (req, _res, next) => roles.includes(req.user.role) ? next() : next(new AppError(403, 'FORBIDDEN', 'You do not have permission to do this.'));
-module.exports = { auth, authorize };
+const optionalAuth = (req, res, next) => req.get('authorization') ? auth(req, res, next) : next();
+module.exports = { auth, authorize, optionalAuth };
