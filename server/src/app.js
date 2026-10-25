@@ -15,9 +15,12 @@ function createApp(env) {
   app.use(express.json({ limit: '32kb' }));
   app.use('/api', createLimiter(env, 300, 60000));
   app.get('/api/health', (_req, res) => res.json({ success: true, data: { status: mongoose.connection.readyState === 1 ? 'ok' : 'degraded', database: ['disconnected', 'connected', 'connecting', 'disconnecting'][mongoose.connection.readyState] } }));
-  app.use('/api/auth', createLimiter(env, 10, 15 * 60000), require('./routes/authRoutes'));
+  const authLimiter = createLimiter(env, 10, 15 * 60000);
+  app.use(['/api/auth/login', '/api/auth/register'], authLimiter);
+  app.use('/api/auth', require('./routes/authRoutes'));
   app.use('/api', require('./routes/resourceRoutes'));
   app.use('/api', require('./routes/bookingRoutes'));
+  app.use('/api', require('./routes/userRoutes'));
   app.use(notFound);
   app.use(errorHandler);
   return app;

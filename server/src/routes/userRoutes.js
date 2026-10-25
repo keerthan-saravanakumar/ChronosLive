@@ -1,0 +1,15 @@
+const router = require('express').Router();
+const { auth, authorize } = require('../middlewares/auth');
+const { upload } = require('../middlewares/upload');
+const validate = require('../middlewares/validate');
+const { z, route, empty, idParams, pagination } = require('../validators/common');
+const authSchemas = require('../validators/auth');
+const schemas = require('../validators/resources');
+const c = require('../controllers/userController');
+const wrap = require('../utils/asyncHandler');
+router.patch('/users/me', auth, upload.single('avatar'), validate(authSchemas.profile), wrap(c.profile));
+router.post('/services/:id/cover', auth, authorize('organizer'), upload.single('cover'), validate(schemas.id), wrap(c.cover));
+router.get('/organizer/stats', auth, authorize('organizer'), validate(route()), wrap(c.stats));
+router.get('/admin/users', auth, authorize('admin'), validate(route(empty, empty, z.object({ ...pagination, search: z.string().trim().max(100).optional() }).strict())), wrap(c.users));
+router.patch('/admin/users/:id/status', auth, authorize('admin'), validate(route(z.object({ isActive: z.boolean() }).strict(), idParams)), wrap(c.status));
+module.exports = router;
