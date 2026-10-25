@@ -17,6 +17,7 @@ function createApp(env) {
   app.get('/api/health', (_req, res) => res.json({ success: true, data: { status: mongoose.connection.readyState === 1 ? 'ok' : 'degraded', database: ['disconnected', 'connected', 'connecting', 'disconnecting'][mongoose.connection.readyState] } }));
   app.use('/api/auth', createLimiter(env, 10, 15 * 60000), require('./routes/authRoutes'));
   app.use('/api', require('./routes/resourceRoutes'));
+  app.use('/api', require('./routes/bookingRoutes'));
   app.use(notFound);
   app.use(errorHandler);
   return app;

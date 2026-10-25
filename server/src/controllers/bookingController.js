@@ -1,0 +1,14 @@
+const bookings = require('../services/bookingService');
+const waitlist = require('../services/waitlistService');
+const notifications = require('../services/notificationService');
+const { context } = require('./resourceController');
+exports.book = async (req, res) => res.status(201).json({ success: true, data: await bookings.book(req.validated.params.id, context(req)) });
+exports.cancel = async (req, res) => res.json({ success: true, data: await bookings.cancel(req.validated.params.id, req.validated.body.reason, context(req)) });
+exports.capacity = async (req, res) => res.json({ success: true, data: await bookings.capacity(req.validated.params.id, req.validated.body.capacity, context(req)) });
+exports.cancelSlot = async (req, res) => res.json({ success: true, data: await bookings.cancelSlot(req.validated.params.id, req.validated.body.reason, context(req)) });
+exports.mine = async (req, res) => res.json({ success: true, data: await bookings.mine(req.user._id, req.validated.query.status) });
+exports.join = async (req, res) => res.status(201).json({ success: true, data: await waitlist.join(req.validated.params.id, context(req)) });
+exports.leave = async (req, res) => res.json({ success: true, data: await waitlist.leave(req.validated.params.id, context(req)) });
+exports.waitlist = async (req, res) => res.json({ success: true, data: await waitlist.mine(req.user._id) });
+exports.notifications = async (req, res) => res.json({ success: true, ...await notifications.list(req.user._id, req.validated.query) });
+exports.read = async (req, res) => res.json({ success: true, data: await notifications.markRead(req.user._id, req.validated.params.id) });

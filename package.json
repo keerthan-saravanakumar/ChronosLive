@@ -11,5 +11,6 @@
     "test": "npm test --workspace server",
     "start": "npm start --workspace server",
     "seed": "npm run seed --workspace server"
+    ,"local": "npm run local --workspace server"
   }
 }

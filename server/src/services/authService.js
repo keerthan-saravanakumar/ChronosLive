@@ -35,8 +35,13 @@ async function authenticateToken(token, env) {
   return { user, claims };
 }
 async function logout(user, claims) {
-  const updated = await User.findOneAndUpdate({ _id: user._id, authVersion: claims.ver, isActive: true }, { $inc: { authVersion: 1 } }, { new: true });
-  if (!updated) throw new AppError(401, 'SESSION_REVOKED', 'This session has already ended.');
-  return updated;
+  const { transaction } = require('./transaction');
+  const { enqueue } = require('./notificationService');
+  return transaction(async session => {
+    const updated = await User.findOneAndUpdate({ _id: user._id, authVersion: claims.ver, isActive: true }, { $inc: { authVersion: 1 } }, { new: true, session });
+    if (!updated) throw new AppError(401, 'SESSION_REVOKED', 'This session has already ended.');
+    await enqueue('revoke:' + user._id + ':' + updated.authVersion, 'auth:revoked', { userId: String(user._id), authVersion: updated.authVersion }, session, user._id);
+    return updated;
+  });
 }
 module.exports = { publicUser, issueToken, register, login, authenticateToken, logout };
