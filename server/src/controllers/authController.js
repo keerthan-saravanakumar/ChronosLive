@@ -4,6 +4,6 @@ exports.login = async (req, res) => res.json({ success: true, data: await servic
 exports.me = async (req, res) => res.json({ success: true, data: service.publicUser(req.user) });
 exports.logout = async (req, res) => {
   await service.logout(req.user, req.claims);
-  req.app.locals.revokeSockets?.(String(req.user._id));
+  await req.app.locals.revokeSockets?.(String(req.user._id));
   res.json({ success: true, data: { message: 'Signed out of all sessions.' } });
 };
