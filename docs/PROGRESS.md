@@ -11,10 +11,10 @@ Authorization: proceed through all phases without approval pauses; preserve exis
 | 4 Realtime | Verified | 33 tests pass; authenticated rooms, private delivery, logout and expiry. Local restart preserved seed data. |
 | 5 Core frontend | Verified | Production build passes; browser registration/book/cancel/waitlist flows verified; no console errors; mobile 390px has no horizontal overflow. |
 | 6 Organizer/notifications | Verified locally | 6 integration tests; organizer creation, bulk rollback, capacity promotion, notifications, profile and admin checked in Chrome. Live Cloudinary upload awaits credentials. |
-| 7 Jobs/hardening | In progress | 6 scheduled-job tests pass; full regression suite and final responsive/security review next. |
+| 7 Jobs/hardening | Verified locally | 45/45 regression tests + 3/3 production-security tests; build, dependency audit and credential scan pass. |
 | 8 Gemini stretch | Deferred | Core and deployment take priority |
-| 9 Deployment | Pending | No provider credentials found in environment; check connected accounts |
-| 10 Documentation/submission | Pending | |
+| 9 Deployment | Prepared; external setup pending | GitHub repository created; Render needs GitHub authorization; Atlas requires login. Vercel signed in. Hosting config/runbook ready. |
+| 10 Documentation/submission | Prepared | README, architecture/API, verification, demo script and submission checklist written; live links/video/form remain. |
 
 ## Checkpoint
 
@@ -22,11 +22,17 @@ Original user documents are `MASTER_PROMPT.md` and `GUIDELINES.md` (names differ
 
 ## Latest checkpoint
 
+- Phase 6 commits: `15dd3a6` backend/profile/admin, `d42cdc0` organizer and account UI, `13697ce` integration tests/progress.
+- Phase 7 commits: `8962934` lifecycle/reminder jobs and tests, `1df7913` startup/slot/auth hardening, `a694480` production-security checks and deployment policy.
+- Full regression suite: 45/45 passed; additional production-security suite: 3/3 passed. Frontend build passes, dependency audit reports 0 vulnerabilities, credential-pattern scan passes. Vercel build correctly rejects an insecure/unconfigured API URL.
+- GitHub repository created: https://github.com/keerthan-saravanakumar/ChronosLive. Final source push/CI verification is next. `render.yaml`, Vercel CSP/SPA config and deployment/runbook documents are prepared. No live deployment is claimed.
+- Provider state: Render requests a new GitHub authorization; Atlas is signed out; Vercel has an active account. No Atlas/Cloudinary/provider tokens exist in project configuration. Complete remaining local checks and publication before requesting external access.
+
 - Phase 6: 6/6 admin/profile/upload validation tests and the production build pass. Browser checks created a service and 12 recurring sessions; repeating the batch returned conflict details and left exactly 12 sessions. Increasing a seeded slot from capacity 2 to 4 promoted both waiters, with a live attendee toast and DB-backed notification. Mark-all-read, profile save, admin listing and logout verified. Fixed accessible form labels and short-screen sidebar overflow.
 - Cloudinary credentials are absent; the tested upload failure is an honest 503. A successful external upload is still unverified.
-- Phase 7 underway: completion/expiry and reminders run at startup and every five minutes. Six new tests verify concurrent jobs, durable reminder recovery, a held cancellation-guard race, query-time closure without cron and offset-aware date filters. New-slot events now enter the durable outbox. Full regression verification remains.
+- Phase 7 verified: completion/expiry and reminders run at startup and every five minutes. New-slot events enter the durable outbox. Full regression and security checks passed; production-mode startup/index readiness was also smoke-tested against an isolated local database.
 - Local API: http://localhost:4000; frontend: http://localhost:5173. The API was restarted with current routes and scheduled jobs. Persistent seed data survived (0 duplicate services added). `npm run local` owns the database in `.local/mongodb`.
-- Next: finish Phase 7 checks, prepare hosting configurations, architecture/API/setup documents and the submission checklist; inspect provider access. No live deployment or GitHub Actions run has been verified. Gemini remains deferred.
+- Final browser evidence includes mobile organizer roster/recurrence forms at 390px without page overflow and a fresh organizer session without console errors. Screenshots were saved. Next: publish final source/CI, then address the documented external provider requirements. No live deployment is claimed; Gemini remains deferred.
 
 ## Commits and tests
 
