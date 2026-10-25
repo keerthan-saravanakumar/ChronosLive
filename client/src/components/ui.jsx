@@ -31,7 +31,8 @@ export const Badge = ({ children, tone = 'green' }) => <span className={'badge b
 export const Avatar = ({ user, size = '' }) => <span className={'avatar ' + size}>{user?.avatarUrl ? <img src={user.avatarUrl} alt="" /> : initials(user?.name)}</span>;
 export function Field({ label, children, hint, ...props }) {
   const id = useId();
-  return <label className="field" htmlFor={id}><span>{label}</span>{children ? cloneElement(children, { id }) : <input id={id} {...props}/>} {hint && <small>{hint}</small>}</label>;
+  const accessibility = { id, 'aria-labelledby': id + '-label', ...(hint ? { 'aria-describedby': id + '-hint' } : {}) };
+  return <label className="field" htmlFor={id}><span id={id + '-label'}>{label}</span>{children ? cloneElement(children, accessibility) : <input {...accessibility} {...props}/>} {hint && <small id={id + '-hint'}>{hint}</small>}</label>;
 }
 export function EmptyState({ title = 'A little room for something new', description, to, action = 'Explore services', icon = 'calendar' }) {
   return <div className="empty-state"><span className="empty-icon"><Icon name={icon} size={28}/></span><h3>{title}</h3><p>{description}</p>{to && <Link className="btn btn-primary" to={to}>{action}<Icon name="arrow" size={16}/></Link>}</div>;
