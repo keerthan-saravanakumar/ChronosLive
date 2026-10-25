@@ -10,8 +10,8 @@ Authorization: proceed through all phases without approval pauses; preserve exis
 | 3 Booking/waitlist | Verified | 29 tests pass, including deterministic held-user-guard race and outbox crash boundaries. Persistent local API and invariant-safe seed run successfully. |
 | 4 Realtime | Verified | 33 tests pass; authenticated rooms, private delivery, logout and expiry. Local restart preserved seed data. |
 | 5 Core frontend | Verified | Production build passes; browser registration/book/cancel/waitlist flows verified; no console errors; mobile 390px has no horizontal overflow. |
-| 6 Organizer/notifications | In progress | Organizer dashboard/roster, uploads, notifications/profile and admin |
-| 7 Jobs/hardening | Pending | |
+| 6 Organizer/notifications | Verified locally | 6 integration tests; organizer creation, bulk rollback, capacity promotion, notifications, profile and admin checked in Chrome. Live Cloudinary upload awaits credentials. |
+| 7 Jobs/hardening | In progress | 6 scheduled-job tests pass; full regression suite and final responsive/security review next. |
 | 8 Gemini stretch | Deferred | Core and deployment take priority |
 | 9 Deployment | Pending | No provider credentials found in environment; check connected accounts |
 | 10 Documentation/submission | Pending | |
@@ -19,6 +19,14 @@ Authorization: proceed through all phases without approval pauses; preserve exis
 ## Checkpoint
 
 Original user documents are `MASTER_PROMPT.md` and `GUIDELINES.md` (names differ from conversational references). Both were read completely. Repository initially contained only those documents. Node v24.13.0, npm 11.6.2 and Git are available. GitHub/Render/Vercel CLIs are not installed.
+
+## Latest checkpoint
+
+- Phase 6: 6/6 admin/profile/upload validation tests and the production build pass. Browser checks created a service and 12 recurring sessions; repeating the batch returned conflict details and left exactly 12 sessions. Increasing a seeded slot from capacity 2 to 4 promoted both waiters, with a live attendee toast and DB-backed notification. Mark-all-read, profile save, admin listing and logout verified. Fixed accessible form labels and short-screen sidebar overflow.
+- Cloudinary credentials are absent; the tested upload failure is an honest 503. A successful external upload is still unverified.
+- Phase 7 underway: completion/expiry and reminders run at startup and every five minutes. Six new tests verify concurrent jobs, durable reminder recovery, a held cancellation-guard race, query-time closure without cron and offset-aware date filters. New-slot events now enter the durable outbox. Full regression verification remains.
+- Local API: http://localhost:4000; frontend: http://localhost:5173. The API was restarted with current routes and scheduled jobs. Persistent seed data survived (0 duplicate services added). `npm run local` owns the database in `.local/mongodb`.
+- Next: finish Phase 7 checks, prepare hosting configurations, architecture/API/setup documents and the submission checklist; inspect provider access. No live deployment or GitHub Actions run has been verified. Gemini remains deferred.
 
 ## Commits and tests
 
