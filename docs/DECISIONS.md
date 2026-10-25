@@ -1,0 +1,14 @@
+# Implementation decisions
+
+The master prompt and official guidelines govern scope. Later user instructions authorize autonomous execution and strict all-or-nothing bulk creation.
+
+- Bulk slot conflicts reject the entire transaction, including conflicts within the batch, with identified intervals and slot IDs/batch positions.
+- UTC storage, local display with IST default. Recurrences and clock filters explicitly use Asia/Kolkata. Date bounds are inclusive; intervals are half-open; adjacent intervals are allowed. Reject incomplete final intervals and overnight recurrence windows. Limit 200 generated slots.
+- Correct service creation to POST /api/services. Preserve PATCH/DELETE /api/services/:id. Add timeFrom/timeTo clock filters, matching names in the optional AI specification. reminderSent is a required Booking field.
+- Organizers can book other organizers' slots; never their own, including waitlists. Individual cancellations use cancelled; whole-slot cascades use cancelled_by_organizer. Only the slot owner-organizer/admin bypasses the attendee cutoff.
+- Service archival blocks new slots/direct bookings/queue joins and discovery, but honors existing bookings and queues. Account deactivation revokes access and new eligibility; it does not silently cancel bookings or archive owned services. Inactive waiting users are skipped on promotion.
+- JWT in sessionStorage/AuthContext, 15-minute default expiry, no refresh tokens. Logout endpoint revokes all user sessions using authVersion; deactivation increments it too. REST/socket checks use current DB identity. Vercel frontend security headers are separate from backend Helmet.
+- Every relevant transaction writes real shared guards before decisions: Service.revision (policy/archive and service mutations), Slot.version (seat/queue mutations), User.bookingRevision (cross-slot eligibility/auth changes), organizer User.scheduleRevision (cross-service schedule creation/cancellation). All writers, seeds and jobs must obey the protocol. MongoDB write conflicts restart the entire transaction; lock contention is never a skip reason. Conditional seat updates and partial unique indexes remain mandatory.
+- Keep slot times/service/organizer immutable after creation; PATCH edits capacity. Use Service -> Slot -> involved Users where practical, with retries for dynamic queue contention. Coarse per-service serialization is an intentional project-scale tradeoff.
+- Store outbox delivery intent in the business transaction. After commit, a leased worker idempotently creates Notification records (unique eventId/user), emits stable-ID events and acknowledges its lease. Socket delivery can repeat or be missed; the DB is authoritative. Versioned slot snapshots and reconnect refetch prevent stale UI state. reminderSent means a unique reminder intent was durably queued.
+- Add no technologies outside the prescribed stack. Gemini is deferred until core workflows and deployment readiness are proven.
