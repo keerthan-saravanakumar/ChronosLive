@@ -1,4 +1,4 @@
-# Project Name
+# Project Name: CHRONOS LIVE
 
 **ChronosLive** — a real-time appointment booking and dynamic waitlist management platform
 
