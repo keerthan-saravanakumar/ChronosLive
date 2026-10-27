@@ -8,7 +8,7 @@
 
 **Live Application:** https://chronoslive.vercel.app/
 
-**Backend API:** https://chronoslive-api.onrender.com
+**Backend API:** https://chronoslive-api.onrender.com/api/health
 
 **Demo Video:** [Add demo video link before submission]
 
