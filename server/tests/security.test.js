@@ -4,7 +4,7 @@ const { env } = require('./helpers');
 
 test('production API sends security headers and only the configured CORS origin', async () => {
   const app = createApp({ ...env, NODE_ENV: 'production', CLIENT_URL: 'https://chronos.example' });
-  const response = await request(app).get('/api/health').set('Origin', 'https://untrusted.example').expect(200);
+  const response = await request(app).get('/api/health').set('Origin', 'https://untrusted.example').expect(503);
   expect(response.headers['access-control-allow-origin']).toBe('https://chronos.example');
   expect(response.headers['x-content-type-options']).toBe('nosniff');
   expect(response.headers['x-powered-by']).toBeUndefined();
@@ -16,7 +16,27 @@ test('production auth throttling rejects request eleven and leaves health availa
   for (let i = 0; i < 10; i++) await request(app).post('/api/auth/login').send({ email: 'invalid' }).expect(400);
   const response = await request(app).post('/api/auth/login').send({ email: 'invalid' }).expect(429);
   expect(response.body.error.code).toBe('RATE_LIMITED');
-  await request(app).get('/api/health').expect(200);
+  await request(app).get('/api/health').expect(503);
+});
+
+test('database outage makes hosting probes fail without consuming the API request quota', async () => {
+  const app = createApp({ ...env, NODE_ENV: 'production' });
+  const health = await request(app).get('/api/health').expect(503);
+  expect(health.body).toMatchObject({ success: false, data: { status: 'degraded', database: 'disconnected' }, error: { code: 'DATABASE_UNAVAILABLE' } });
+  expect(health.headers['cache-control']).toBe('no-store');
+  expect(health.headers.ratelimit).toBeUndefined();
+  let server;
+  await new Promise(resolve => { server = app.listen(0, '127.0.0.1', resolve); });
+  const client = request('http://127.0.0.1:' + server.address().port);
+  try {
+    for (let batch = 0; batch < 6; batch++) {
+      await Promise.all(Array.from({ length: 50 }, () => client.get('/api/missing').expect(404)));
+    }
+    await client.get('/api/missing').expect(429);
+    await client.get('/api/health').expect(503);
+  } finally {
+    await new Promise(resolve => server.close(resolve));
+  }
 });
 
 test('malformed JSON, oversized bodies and invalid object IDs have safe API errors', async () => {

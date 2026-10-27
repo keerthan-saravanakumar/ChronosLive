@@ -1,9 +1,29 @@
 import { Link } from 'react-router-dom';
-import { Avatar, Badge, Icon } from './ui';
-export default function ServiceCard({ service }) {
-  const tone = service.category === 'Labs' ? 'sand' : service.category === 'Consultations' ? 'peach' : 'sage';
-  return <Link to={'/services/' + service._id} className="service-card">
-    <div className={'service-cover ' + tone}>{service.coverImageUrl ? <img src={service.coverImageUrl} alt=""/> : <><span className="cover-orbit one"/><span className="cover-orbit two"/><span className="cover-symbol"><Icon name={tone === 'sand' ? 'spark' : tone === 'peach' ? 'users' : 'calendar'} size={44}/></span></>}<span className="cover-tag">{service.category}</span></div>
-    <div className="service-card-body"><div className="service-card-title"><h3>{service.title}</h3><Icon name="arrow" size={19}/></div><p className="clamp-two">{service.description}</p><div className="card-organizer"><Avatar user={service.organizer} size="small"/><span>{service.organizer?.name || 'Organizer'}</span></div><div className="card-bottom"><span><Icon name="location" size={15}/>{service.location}</span>{!service.isActive && <Badge tone="gray">Archived</Badge>}</div></div>
-  </Link>;
+import { format } from 'date-fns';
+import { servicesApi } from '../api/services';
+import { useResource } from '../hooks/useResource';
+import { useSlotLive } from '../hooks/useSlotLive';
+import { timeLabel } from '../utils/format';
+import { Icon } from './ui';
+import ServiceCover from './ServiceCover';
+
+export default function ServiceCard({ service, priority = false }) {
+  const schedule = useResource(signal => servicesApi.slots(service._id, { from: new Date().toISOString(), availableOnly: true, limit: 1 }, signal), [service._id]);
+  useSlotLive(service._id);
+  const next = schedule.data?.data?.[0];
+  const seats = next ? Math.max(0, next.capacity - next.bookedCount) : 0;
+  return (
+    <Link to={'/services/' + service._id} className="service-card">
+      <div className="service-cover"><ServiceCover service={service} priority={priority} /></div>
+      <div className="service-card-body">
+        <h2>{service.title}</h2>
+        <p className="service-card-organizer">{service.organizer?.name || 'Organizer'}</p>
+        <div className="service-card-details">
+          <div><Icon name="calendar" size={15} /><span>{next ? format(new Date(next.startTime), 'EEE, d MMM') + ' · ' + timeLabel(next.startTime) : schedule.loading && !schedule.data ? 'Checking session times…' : schedule.error ? 'View session times' : 'View dates & waitlists'}</span></div>
+          <div><Icon name={next && !seats ? 'waitlist' : 'users'} size={15} /><span>{next ? seats ? seats + (seats === 1 ? ' seat available' : ' seats available') : 'Full · waitlist available' : service.category}</span></div>
+        </div>
+        <div className="service-card-bottom"><span>{service.category}</span><span className="circle-arrow" aria-hidden="true"><Icon name="arrow" size={17} /></span></div>
+      </div>
+    </Link>
+  );
 }

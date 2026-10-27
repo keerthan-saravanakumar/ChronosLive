@@ -161,7 +161,9 @@ npm run configure:hosting -- https://YOUR-API.onrender.com
 
 Set the two matching `VITE_` variables in Vercel and `CLIENT_URL` in Render. Vercel builds intentionally reject missing/insecure API settings or a CSP that does not match the backend. The committed `.invalid` origin is an explicit configuration placeholder, not a deployed service.
 
-Current external status: source is published and [GitHub Actions](https://github.com/keerthan-saravanakumar/ChronosLive/actions/runs/40211895050) passed 48 tests, build and credential scan. Render account setup and its free-service form are ready. The dedicated Atlas project exists; cluster creation is blocked by reCAPTCHA connectivity. Vercel access is verified. **No working live application is claimed yet.** Render's free tier can sleep; its first request may take roughly 30–60 seconds. The client reconciles after reconnect and server queries remain safe while cron is delayed.
+Current external status: source is published and [GitHub Actions](https://github.com/keerthan-saravanakumar/ChronosLive/actions/runs/40211895050) passed the preceding 48-test implementation, build and credential scan. Render's free-service form and Vercel's root-directory import draft are ready. The dedicated Atlas project exists; a fresh 26 October provisioning attempt still timed out at reCAPTCHA and the cluster list remained empty. **No working live application is claimed yet.** Render's free tier can sleep; its first request may take roughly 30–60 seconds. The client reconciles after reconnect and server queries remain safe while cron is delayed.
+
+Once the real origins are assigned, `npm run smoke:deployment -- --api https://ACTUAL-API.onrender.com --app https://ACTUAL-APP.vercel.app` checks readiness, CORS, security headers, frontend assets and deep links. Add `--workflows` to exercise all five workflows using isolated accounts and two WebSocket clients; it archives/cancels only its own fixtures afterward. See the runbook for reports, retained test records and the separate browser checks. Health probes return 503 when the database is disconnected and are excluded from user rate limits.
 
 ## Demo Accounts
 
@@ -188,4 +190,4 @@ OpenAI Codex assisted with design review, implementation, debugging, integration
 
 ## Acknowledgements/third-party libraries
 
-Built for the [official project guidelines](GUIDELINES.md) and [project specification](MASTER_PROMPT.md). Uses the open-source libraries listed above and their upstream documentation. Package versions and transitive licenses are available through `package-lock.json` and the installed packages. The application was developed incrementally for this project rather than copied from an existing tutorial application.
+Uses the open-source libraries listed above and their upstream documentation. Package versions and transitive licenses are available through `package-lock.json` and the installed packages. The application was developed incrementally for this project rather than copied from an existing tutorial application.

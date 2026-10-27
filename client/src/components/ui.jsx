@@ -23,6 +23,11 @@ export function Icon({ name, size = 20, ...props }) {
     filter: <path d="M4 5h16l-6 7v7l-4 2v-9L4 5Z"/>,
     chevron: <path d="m9 5 7 7-7 7"/>,
     mail: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></>,
+    waitlist: <><path d="M8 4H5v17h14V4h-3M9 2h6v5H9z"/><path d="m8 13 2 2 5-5m-7 8h7"/></>,
+    overview: <><path d="m3 10 9-7 9 7v11H3zM9 21v-8h6v8"/></>,
+    briefcase: <><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4M3 12h18M10 12v3h4v-3"/></>,
+    share: <><path d="M12 16V2m-4 4 4-4 4 4M5 12H3v9h18v-9h-2"/></>,
+    sliders: <><path d="M4 6h16M7 12h10M10 18h4"/><circle cx="15" cy="6" r="2" fill="currentColor"/></>,
   };
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>{paths[name] || paths.calendar}</svg>;
 }
@@ -34,7 +39,7 @@ export function Field({ label, children, hint, ...props }) {
   const accessibility = { id, 'aria-labelledby': id + '-label', ...(hint ? { 'aria-describedby': id + '-hint' } : {}) };
   return <label className="field" htmlFor={id}><span id={id + '-label'}>{label}</span>{children ? cloneElement(children, accessibility) : <input {...accessibility} {...props}/>} {hint && <small id={id + '-hint'}>{hint}</small>}</label>;
 }
-export function EmptyState({ title = 'A little room for something new', description, to, action = 'Explore services', icon = 'calendar' }) {
+export function EmptyState({ title = 'No sessions to display', description, to, action = 'Explore sessions', icon = 'calendar' }) {
   return <div className="empty-state"><span className="empty-icon"><Icon name={icon} size={28}/></span><h3>{title}</h3><p>{description}</p>{to && <Link className="btn btn-primary" to={to}>{action}<Icon name="arrow" size={16}/></Link>}</div>;
 }
 export function ErrorState({ error, retry }) {
@@ -45,9 +50,9 @@ export function Pagination({ meta, onPage }) {
   if (!meta || meta.pages <= 1) return null;
   return <nav className="pagination" aria-label="Pagination"><Button variant="secondary" disabled={meta.page <= 1} onClick={() => onPage(meta.page - 1)}><Icon name="back" size={16}/>Previous</Button><span>Page {meta.page} of {meta.pages}</span><Button variant="secondary" disabled={meta.page >= meta.pages} onClick={() => onPage(meta.page + 1)}>Next<Icon name="arrow" size={16}/></Button></nav>;
 }
-export function ConfirmDialog({ open, title, children, onClose, onConfirm, busy, confirmLabel = 'Confirm', danger = false }) {
+export function ConfirmDialog({ open, title, children, onClose, onConfirm, busy, confirmLabel = 'Confirm', cancelLabel = 'Go back', danger = false }) {
   const dialog = useRef(), label = useId();
   useEffect(() => { if (open) dialog.current?.showModal(); else dialog.current?.close(); }, [open]);
   if (!open) return null;
-  return <dialog ref={dialog} className="dialog" aria-labelledby={label} onCancel={e => { e.preventDefault(); if (!busy) onClose(); }} onClick={e => { if (e.target === e.currentTarget && !busy) onClose(); }}><div className="dialog-body"><h2 id={label}>{title}</h2><div className="dialog-copy">{children}</div><div className="dialog-actions"><Button variant="secondary" autoFocus onClick={onClose} disabled={busy}>Keep it</Button><Button variant={danger ? 'danger' : 'primary'} loading={busy} onClick={onConfirm}>{confirmLabel}</Button></div></div></dialog>;
+  return <dialog ref={dialog} className="dialog" aria-labelledby={label} onCancel={e => { e.preventDefault(); if (!busy) onClose(); }} onClick={e => { if (e.target === e.currentTarget && !busy) onClose(); }}><div className="dialog-body"><h2 id={label}>{title}</h2><div className="dialog-copy">{children}</div><div className="dialog-actions"><Button variant="secondary" autoFocus onClick={onClose} disabled={busy}>{cancelLabel}</Button><Button variant={danger ? 'danger' : 'primary'} loading={busy} onClick={onConfirm}>{confirmLabel}</Button></div></div></dialog>;
 }

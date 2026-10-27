@@ -4,8 +4,8 @@
 
 - GitHub repository: https://github.com/keerthan-saravanakumar/ChronosLive. Implementation commit `26f045a` is published; [CI run 40211895050](https://github.com/keerthan-saravanakumar/ChronosLive/actions/runs/40211895050) passed all 48 tests, frontend build and credential scan.
 - Render: account setup succeeded. The public-repository web-service form is prepared for `chronoslive-api`, free compute, Singapore, the commands below and `/api/health`. Required production environment values remain incomplete; no service has been deployed.
-- Atlas: signed in and the dedicated ChronosLive project exists. The saved cluster draft uses Free/M0, AWS Singapore, name `ChronosLive`, with automatic security setup and sample data disabled. Creation is blocked by the provider's reCAPTCHA connectivity error; no cluster or production URI is verified.
-- Vercel: existing Hobby account access was verified; deployment awaits a working backend and matching configuration.
+- Atlas: signed in again on 26 October and restored the saved Free/M0 AWS Singapore draft, name `ChronosLive`, with automatic security setup and sample data disabled. Provisioning again failed with `reCAPTCHA Timeout`; the cluster list was checked afterward and remained empty. No cluster or production URI exists yet.
+- Vercel: existing Hobby account access was verified and the `chronoslive` import draft now selects the repository root and Vite. Deployment awaits a working backend and matching configuration.
 - Cloudinary: the three server credentials are absent; successful image upload is unverified.
 - Gemini: deferred. Its key is not required for the core app.
 
@@ -52,7 +52,7 @@ The open form already contains `NODE_ENV=production`, `NODE_VERSION=24.13.0` and
 
 Startup awaits additive index creation before listening. It does not drop production indexes. If startup reports duplicate/index conflicts, inspect the data and resolve them deliberately; do not delete records or reset production as a deployment shortcut. The seed is also additive and uses the booking engine.
 
-Check the actual assigned Render URL, not an assumed service-name URL. The `/api/health` JSON must say `status: ok` and `database: connected`. If it reports degraded, diagnose Atlas access and server settings. Backend Helmet does not supply the frontend document's CSP.
+Check the actual assigned Render URL, not an assumed service-name URL. The `/api/health` JSON must say `status: ok` and `database: connected`. An unavailable database returns HTTP 503 with `DATABASE_UNAVAILABLE`; probes are uncached and excluded from user rate limits. If it reports degraded, diagnose Atlas access and server settings. Backend Helmet does not supply the frontend document's CSP.
 
 ## 4. Vercel frontend and CSP
 
@@ -90,6 +90,24 @@ npm run seed
 The script creates missing demo accounts/services and uses real guarded booking/waitlist operations. It will not overwrite an existing account's password or recreate an existing service. Do not run the local launcher against production; it always manages a local development replica set. Store evaluator demo credentials privately; attendee and organizer registration also work without sharing seeded passwords.
 
 ## 6. Required live smoke test
+
+From a checkout with `npm ci` installed, run the read-only deployment check with the actual assigned origins (no trailing slash):
+
+```sh
+npm run smoke:deployment -- --api https://ACTUAL-API.onrender.com --app https://ACTUAL-APP.vercel.app --report .local/deployment-readiness.json
+```
+
+It verifies connected database readiness, CORS preflight, protected routes, frontend security headers, the JavaScript entry asset and SPA deep links. The first health request allows up to 60 seconds for a Render cold start. HTTPS is required; a local check must explicitly use `--local` with loopback HTTP origins. Reports contain results and resource IDs, never credentials, and may only be written inside ignored `.local/`.
+
+Then exercise the core workflows:
+
+```sh
+npm run smoke:deployment -- --api https://ACTUAL-API.onrender.com --app https://ACTUAL-APP.vercel.app --workflows --report .local/deployment-workflows.json
+```
+
+`--workflows` creates five uniquely named verification accounts, one service and four slots through the real API. It uses two authenticated WebSocket clients to verify last-seat updates, FIFO promotion, notifications and logout revocation, plus role/ownership checks, duplicate rejection, recurring-batch rollback, capacity changes, personal state after reconnect and slot cancellation. Cleanup only cancels this run's slots, archives its service and revokes its sessions; audit records and test accounts remain. Existing accounts and schedules are preserved. Six registration/login requests fit within the production auth quota; avoid repeatedly rerunning within its 15-minute window. If cleanup fails, retain the report's run/resource IDs for targeted follow-up.
+
+The workflow runner is itself tested against a real isolated replica set and production middleware, including preservation of a pre-existing schedule. This automation supports the browser checks below; it does not prove rendered toasts, Cloudinary success, scheduled jobs or a second browser's UI behavior.
 
 Use two separate browsers or isolated login sessions. Record actual results in `VERIFICATION.md`:
 

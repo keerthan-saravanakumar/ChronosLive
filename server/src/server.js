@@ -31,5 +31,8 @@ async function startServer(env = readEnv()) {
 }
 if (require.main === module) startServer().then(runtime => {
   for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => runtime.close().then(() => process.exit(0)));
-}).catch(error => { console.error('Startup failed:', error.name, error.message.startsWith('Invalid environment') ? error.message : 'Check database connectivity and environment configuration.'); process.exitCode = 1; });
+}).catch(error => {
+  console.error('Startup failed:', error);
+  process.exitCode = 1;
+});
 module.exports = { startServer };

@@ -14,7 +14,7 @@ Base URL: `http://localhost:4000/api` locally; the deployed Render origin plus `
 { "success": false, "error": { "code": "SLOT_FULL", "message": "This slot has just filled up. Join the waitlist.", "details": { "canJoinWaitlist": true } } }
 ```
 
-Errors use 400 for validation, 401 for authentication/revocation, 403 for ownership/role, 404 for missing resources, 409 for business conflicts, 413 for oversized JSON, 429 for throttling and 500 for unexpected errors. Upload provider failure/unavailability uses 502/503. Production errors never include stack traces or credential values. Unrecognized body/query keys are rejected. Resource IDs must be 24-character hexadecimal ObjectIds.
+Errors use 400 for validation, 401 for authentication/revocation, 403 for ownership/role, 404 for missing resources, 409 for business conflicts, 413 for oversized JSON, 429 for throttling and 500 for unexpected errors. Upload provider failure/unavailability uses 502/503; database readiness failure uses 503. Production errors never include stack traces or credential values. Unrecognized body/query keys are rejected. Resource IDs must be 24-character hexadecimal ObjectIds.
 
 Pagination defaults to `page=1&limit=12`; limit is 1–100. JSON bodies are limited to 32 KiB. Auth registration/login is limited to 10 requests per 15 minutes/IP; the general API limit is 300 requests per minute/IP. Test mode skips these limits except explicit production-mode tests.
 
@@ -123,7 +123,7 @@ Common 409 codes: `SLOT_CLOSED`, `SLOT_IN_PAST`, `SLOT_FULL`, `ALREADY_BOOKED`, 
 
 Statistics include `upcomingSlots`, `totalSeats`, `bookedSeats`, `waitlistDemand`, `fillRate` (percent), `activeServices`, all-time `cancellations`/`promotions`, the next six `nextSlots`, and seven-day IST `daily` counts. Notifications are persisted asynchronously from a durable outbox; their read state survives reconnects and event retries.
 
-The health route currently returns HTTP 200 with the explicit connection state. Verify `data.status === "ok"` and `data.database === "connected"` during deployment smoke checks; HTTP status alone is insufficient.
+The health route returns HTTP 200 only while MongoDB is connected. Otherwise it returns HTTP 503 with `success:false`, `error.code:"DATABASE_UNAVAILABLE"` and the diagnostic `data` connection state. Health responses use `Cache-Control: no-store` and are excluded from user request quotas so hosting probes remain reliable under load. Deployment checks verify both HTTP status and `data.status === "ok"` / `data.database === "connected"`.
 
 ## Upload contract
 

@@ -1,6 +1,6 @@
 # Implementation decisions
 
-The master prompt and official guidelines govern scope. Later user instructions authorize autonomous execution and strict all-or-nothing bulk creation.
+Project requirements prioritize strict all-or-nothing bulk creation and robust conflict validation.
 
 - Bulk slot conflicts reject the entire transaction, including conflicts within the batch, with identified intervals and slot IDs/batch positions.
 - UTC storage, local display with IST default. Recurrences and clock filters explicitly use Asia/Kolkata. Date bounds are inclusive; intervals are half-open; adjacent intervals are allowed. Reject incomplete final intervals and overnight recurrence windows. Limit 200 generated slots.
