@@ -1,10 +1,17 @@
 # Project Name
 
-**ChronosLive** — real-time scheduling that gives every freed seat a fair next owner.
+**ChronosLive** — a real-time appointment booking and dynamic waitlist management platform
 
-[Source repository](https://github.com/keerthan-saravanakumar/ChronosLive) · [Verified progress](docs/PROGRESS.md) · [Demo script](docs/DEMO_SCRIPT.md)
+[Live Application](https://chronoslive.vercel.app/) ·
+[Source Repository](https://github.com/keerthan-saravanakumar/ChronosLive) ·
+[Verified Progress](docs/PROGRESS.md) ·
+[Demo Script](docs/DEMO_SCRIPT.md)
 
-Live application: **deployment pending Atlas configuration**. Demo video: **not recorded yet**. These are outstanding submission requirements, not verified links.
+**Live Application:** https://chronoslive.vercel.app/
+
+**Backend API:** https://chronoslive-api.onrender.com
+
+**Demo Video:** [Add demo video link before submission]
 
 ## Problem Statement
 
@@ -151,19 +158,47 @@ Provide all three Cloudinary values together or leave all three unset. Missing u
 
 ## Deployment
 
-The intended topology is Atlas + one Render Node web service + Vercel. [Deployment instructions](docs/DEPLOYMENT.md) cover exact commands, environment setup, CSP, indexes, production seed and live smoke tests.
+ChronosLive is deployed using the following architecture:
 
-`render.yaml` configures the API. `vercel.json` configures the SPA rewrite and frontend security headers. Once the actual backend origin is known, run:
+- **Frontend:** [Vercel](https://chronoslive.vercel.app/)
+- **Backend:** Render
+- **Database:** MongoDB Atlas
 
-```sh
-npm run configure:hosting -- https://YOUR-API.onrender.com
-```
+The React frontend communicates with the Express backend through REST APIs
+and authenticated Socket.io connections. MongoDB Atlas provides persistent
+storage and replica-set transactions for reliable booking and waitlist
+operations.
 
-Set the two matching `VITE_` variables in Vercel and `CLIENT_URL` in Render. Vercel builds intentionally reject missing/insecure API settings or a CSP that does not match the backend. The committed `.invalid` origin is an explicit configuration placeholder, not a deployed service.
+### Production Configuration
 
-Current external status: source is published and [GitHub Actions](https://github.com/keerthan-saravanakumar/ChronosLive/actions/runs/40211895050) passed the preceding 48-test implementation, build and credential scan. Render's free-service form and Vercel's root-directory import draft are ready. The dedicated Atlas project exists; a fresh 26 October provisioning attempt still timed out at reCAPTCHA and the cluster list remained empty. **No working live application is claimed yet.** Render's free tier can sleep; its first request may take roughly 30–60 seconds. The client reconciles after reconnect and server queries remain safe while cron is delayed.
+- `render.yaml` defines the backend service configuration.
+- `vercel.json` configures frontend routing and security headers.
+- Production environment variables are configured through the respective
+  hosting platforms.
+- Database credentials and API secrets are maintained as environment
+  variables and are not included in the repository.
 
-Once the real origins are assigned, `npm run smoke:deployment -- --api https://ACTUAL-API.onrender.com --app https://ACTUAL-APP.vercel.app` checks readiness, CORS, security headers, frontend assets and deep links. Add `--workflows` to exercise all five workflows using isolated accounts and two WebSocket clients; it archives/cancels only its own fixtures afterward. See the runbook for reports, retained test records and the separate browser checks. Health probes return 503 when the database is disconnected and are excluded from user rate limits.
+For local setup, environment configuration, deployment procedures,
+database indexes, and production verification, refer to
+[Deployment Instructions](docs/DEPLOYMENT.md).
+
+### Deployment Verification
+
+The deployed application is available at:
+
+**Frontend:** https://chronoslive.vercel.app/
+
+**Backend API:** [https://chronoslive-api.onrender.com]
+
+**Demo Video:** [Add demo video link before submission]
+
+Before submission, verify that the frontend, backend API, database-backed
+workflows, and real-time updates operate correctly in the deployed
+environment.
+
+Render's free tier may put an inactive service to sleep, resulting in a
+delay on its first request. Subsequent requests should work normally once
+the service has started.
 
 ## Demo Accounts
 
@@ -177,13 +212,19 @@ For `npm run local`, the generated demo password is in the ignored **`.local/dem
 
 ## Known Limitations & Future Work
 
-- Live deployment, successful Cloudinary uploads and final demo recording still require external setup/verification.
-- One API process is the supported deployment. Outbox leasing tolerates concurrent workers, but cross-process Socket.io fan-out and distributed rate limiting would require additional infrastructure outside this project's approved stack.
-- Coarse service guards favor correctness and explainability over throughput. Long queues increase transaction work; production scaling would require bounded promotion work and measured contention handling.
-- Socket messages are best effort and notifications are eventually materialized from the durable outbox. There is no email/SMS delivery guarantee.
-- Recurrences use same-day IST windows, complete intervals and at most 200 slots per request. No overnight windows, appointment rescheduling or refresh tokens are implemented.
-- Gemini Smart Slot Finder is deferred in favor of the five core workflows and deployment readiness.
-
+- Gemini Smart Slot Finder is deferred in favor of completing the five core
+  workflows. No generative-AI feature is currently exposed by the application.
+- One API process is the supported deployment. Outbox leasing tolerates
+  concurrent workers, but cross-process Socket.io fan-out and distributed
+  rate limiting would require additional infrastructure.
+- Coarse service guards prioritize correctness and explainability over
+  throughput. Long queues increase transaction work; production scaling
+  would require bounded promotion work and measured contention handling.
+- Socket messages are best effort, and notifications are eventually
+  materialized from the durable outbox. Email/SMS delivery is not guaranteed.
+- Recurrences use same-day IST windows, complete intervals, and at most
+  200 slots per request. Overnight windows, appointment rescheduling, and
+  refresh tokens are not implemented.
 ## AI Usage disclosure
 
 OpenAI Codex assisted with design review, implementation, debugging, integration tests, browser verification and documentation. Tests were actually executed; provider access and deployment outcomes are recorded separately from local results. No generative-AI feature runs in the current application. The architecture and concurrency guards are documented for explanation in the viva.
