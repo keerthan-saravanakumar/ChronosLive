@@ -187,9 +187,9 @@ The deployed application is available at:
 
 **Frontend:** https://chronoslive.vercel.app/
 
-**Backend API:** [https://chronoslive-api.onrender.com]
+**Backend API:** https://chronoslive-api.onrender.com/api/health
 
-**Demo Video:** [Add demo video link before submission]
+**Demo Video:** https://drive.google.com/file/d/1x1sFYvFnhbbKGUjNDcPDMmthh3C7ZLlz/view?usp=sharing
 
 Before submission, verify that the frontend, backend API, database-backed
 workflows, and real-time updates operate correctly in the deployed
