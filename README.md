@@ -4,8 +4,7 @@
 
 [Live Application](https://chronoslive.vercel.app/) ·
 [Source Repository](https://github.com/keerthan-saravanakumar/ChronosLive) ·
-[Verified Progress](docs/PROGRESS.md) ·
-[Demo Script](docs/DEMO_SCRIPT.md)
+
 
 **Live Application:** https://chronoslive.vercel.app/
 
